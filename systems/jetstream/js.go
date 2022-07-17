@@ -5,10 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/Just4Ease/axon/v2"
-	"github.com/Just4Ease/axon/v2/codec"
-	"github.com/Just4Ease/axon/v2/codec/msgpack"
-	"github.com/Just4Ease/axon/v2/options"
+	"github.com/borderlesshq/axon"
+	"github.com/borderlesshq/axon/codec"
+	"github.com/borderlesshq/axon/codec/msgpack"
+	"github.com/borderlesshq/axon/options"
 	"github.com/gookit/color"
 	"github.com/nats-io/nats.go"
 	"strings"
@@ -18,7 +18,7 @@ import (
 
 const Empty = ""
 
-type natsStore struct {
+type eventStore struct {
 	opts               options.Options
 	nc                 *nats.Conn
 	jsc                nats.JetStreamContext
@@ -32,56 +32,68 @@ type natsStore struct {
 	msh                codec.Marshaler
 }
 
-func (s *natsStore) Close() {
+func (s *eventStore) Close() {
 
 	wg := &sync.WaitGroup{}
 
 	wg.Add(2)
-	go func(wg *sync.WaitGroup) {
+	go func() {
 		defer wg.Done()
 		for _, sub := range s.subscriptions {
 			sub.close()
 		}
-	}(wg)
+	}()
 
-	go func(wg *sync.WaitGroup) {
+	go func() {
 		defer wg.Done()
 		for _, responder := range s.responders {
 			responder.close()
 		}
-	}(wg)
+	}()
 
 	wg.Wait()
 	s.nc.Close()
 }
 
-func (s *natsStore) GetServiceName() string {
+func (s *eventStore) GetServiceName() string {
 	return s.opts.ServiceName
 }
 
-func Init(opts options.Options, options ...nats.Option) (axon.EventStore, error) {
+func Init(opts ...options.Option) (axon.EventStore, error) {
+	opt := options.Options{}
+	// Defaults.
+	_ = options.SetMarshaler(msgpack.Marshaler{})(&opt)
+	_ = options.UseMarshaler()(&opt)
+	_ = options.SetContext(context.Background())(&opt)
 
-	addr := strings.TrimSpace(opts.Address)
+	for _, o := range opts {
+		if err := o(&opt); err != nil {
+			return nil, err
+		}
+	}
+
+	addr := strings.TrimSpace(opt.Address)
 	if addr == Empty {
 		return nil, axon.ErrInvalidURL
 	}
 
-	name := strings.TrimSpace(opts.ServiceName)
+	name := strings.TrimSpace(opt.ServiceName)
 	if name == Empty {
 		return nil, axon.ErrEmptyStoreName
 	}
-	opts.ServiceName = strings.TrimSpace(name)
-	options = append(options, nats.Name(name))
 
-	if opts.AuthenticationToken != Empty {
-		options = append(options, nats.Token(opts.AuthenticationToken))
+	opt.ServiceName = strings.TrimSpace(name)
+	natsOptions := append(opt.NatOptions(), nats.Name(name))
+
+	if opt.AuthenticationToken != Empty {
+		natsOptions = append(natsOptions, nats.Token(opt.AuthenticationToken))
 	}
 
-	if opts.Username != Empty || opts.Password != Empty {
-		options = append(options, nats.UserInfo(opts.Username, opts.Password))
+	if opt.Username != Empty || opt.Password != Empty {
+		natsOptions = append(natsOptions, nats.UserInfo(opt.Username, opt.Password))
 	}
 
-	nc, js, err := connect(opts.ServiceName, opts.Address, options)
+	nc, js, err := connect(opt.ServiceName, opt.Address, natsOptions)
 	if err != nil {
 		if err == nats.ErrJetStreamNotEnabled {
 			goto ignoreError
@@ -98,8 +110,8 @@ ignoreError:
 		color.Green.Print("🌧  JetStream  not connected 💔\n")
 	}
 
-	return &natsStore{
-		opts:               opts,
+	return &eventStore{
+		opts:               opt,
 		jsc:                js,
 		nc:                 nc,
 		jsmEnabled:         jsmEnabled,
@@ -108,12 +120,12 @@ ignoreError:
 		responders:         make(map[string]*responder),
 		publishTopics:      make(map[string]string),
 		knownSubjectsCount: 0,
-		msh:                msgpack.Marshaler{},
+		msh:                opt.Marshaler(),
 		mu:                 &sync.RWMutex{},
 	}, nil
 }
 
-func (s *natsStore) Run(ctx context.Context, handlers ...axon.EventHandler) {
+func (s *eventStore) Run(ctx context.Context, handlers ...axon.EventHandler) {
 	for _, handler := range handlers {
 		handler.Run()
 	}
@@ -127,7 +139,7 @@ func (s *natsStore) Run(ctx context.Context, handlers ...axon.EventHandler) {
 	<-ctx.Done()
 }
 
-func (s *natsStore) registerSubjectsOnStream() {
+func (s *eventStore) registerSubjectsOnStream() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -156,7 +168,7 @@ func (s *natsStore) registerSubjectsOnStream() {
 		Subjects: subjects,
 		NoAck:    false,
 	}); err != nil {
-		if err.Error() == "duplicate subjects detected" {
+		if strings.Contains(err.Error(), "duplicate subjects detected") {
 			streamInfo, _ := s.jsc.StreamInfo(s.opts.ServiceName)
 			if len(streamInfo.Config.Subjects) != len(subjects) {
 				_ = s.jsc.DeleteStream(s.opts.ServiceName)
@@ -167,7 +179,7 @@ func (s *natsStore) registerSubjectsOnStream() {
 					MaxAge:   time.Hour * 48,
 					NoAck:    false,
 				})
-				PrettyJson(streamInfo)
+				//PrettyJson(streamInfo)
 			}
 		}
 	}

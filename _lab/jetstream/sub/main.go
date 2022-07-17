@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/Just4Ease/axon/v2"
-	"github.com/Just4Ease/axon/v2/options"
-	"github.com/Just4Ease/axon/v2/systems/jetstream"
+	"github.com/borderlesshq/axon"
+	"github.com/borderlesshq/axon/options"
+	"github.com/borderlesshq/axon/systems/jetstream"
 	"log"
 )
 
@@ -17,10 +17,7 @@ func main() {
 	name := flag.String("name", "", "help message for flagname")
 	flag.Parse()
 
-	ev, err := jetstream.Init(options.Options{
-		ServiceName: *name,
-		Address:     "localhost:4222",
-	})
+	ev, err := jetstream.Init(options.SetStoreName(*name), options.SetAddress("localhost:4222"))
 
 	if err != nil {
 		log.Fatal(err)

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/Just4Ease/axon/v2/options"
-	"github.com/Just4Ease/axon/v2/systems/jetstream"
+	"github.com/borderlesshq/axon/options"
+	"github.com/borderlesshq/axon/systems/jetstream"
 	"github.com/vmihailenco/msgpack/v5"
 	"log"
 	"sync"
@@ -11,10 +11,7 @@ import (
 )
 
 func main() {
-	ev, err := jetstream.Init(options.Options{
-		ServiceName: "USERS",
-		Address:     "localhost:4222",
-	})
+	ev, err := jetstream.Init(options.SetStoreName("USERS"), options.SetAddress("localhost:4222"))
 	if err != nil {
 		log.Fatal(err)
 	}

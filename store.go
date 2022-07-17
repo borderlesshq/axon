@@ -2,8 +2,8 @@ package axon
 
 import (
 	"context"
-	"github.com/Just4Ease/axon/v2/messages"
-	"github.com/Just4Ease/axon/v2/options"
+	"github.com/borderlesshq/axon/messages"
+	"github.com/borderlesshq/axon/options"
 	"github.com/pkg/errors"
 	"log"
 	"time"
@@ -36,5 +36,15 @@ type EventStore interface {
 	Reply(topic string, handler ReplyHandler, opts ...options.SubscriptionOption) error
 	GetServiceName() string
 	Run(ctx context.Context, handlers ...EventHandler)
+	NewKVStore(opts ...options.KVOption) (KVStore, error)
 	Close()
+}
+
+type KVStore interface {
+	Get(key string) ([]byte, error)
+	Set(key string, value []byte) error
+	Del(key string) error
+	Purge() error
+	Watch(ctx context.Context, key string) (stream <-chan []byte, err error)
+	Keys() []string
 }

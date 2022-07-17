@@ -1,7 +1,7 @@
 package messages
 
 import (
-	"github.com/Just4Ease/axon/v2/utils"
+	"github.com/borderlesshq/axon/utils"
 	"time"
 )
 

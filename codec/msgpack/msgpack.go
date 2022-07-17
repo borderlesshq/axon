@@ -2,7 +2,7 @@
 package msgpack
 
 import (
-	"github.com/Just4Ease/axon/v2/codec"
+	"github.com/borderlesshq/axon/codec"
 	"github.com/vmihailenco/msgpack/v5"
 	"io"
 )

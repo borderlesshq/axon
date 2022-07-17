@@ -53,6 +53,10 @@ func DisablePubStreaming() PublisherOption {
 
 func SetPubHeaders(headers map[string]string) PublisherOption {
 	return func(o *PublisherOptions) error {
+		if len(headers) == 0 {
+			return nil
+		}
+
 		if o.headers == nil {
 			o.headers = headers
 			return nil

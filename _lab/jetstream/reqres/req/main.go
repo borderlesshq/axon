@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/Just4Ease/axon/v2/codec/msgpack"
-	"github.com/Just4Ease/axon/v2/options"
-	"github.com/Just4Ease/axon/v2/systems/jetstream"
+	"github.com/borderlesshq/axon/codec/msgpack"
+	"github.com/borderlesshq/axon/options"
+	"github.com/borderlesshq/axon/systems/jetstream"
 	"log"
 )
 

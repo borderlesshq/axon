@@ -3,7 +3,7 @@ package bytes
 
 import (
 	"fmt"
-	"github.com/Just4Ease/axon/v2/codec"
+	"github.com/borderlesshq/axon/codec"
 	"io"
 	"io/ioutil"
 )

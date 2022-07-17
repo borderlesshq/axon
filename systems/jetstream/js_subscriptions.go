@@ -2,9 +2,9 @@ package jetstream
 
 import (
 	"fmt"
-	"github.com/Just4Ease/axon/v2"
-	"github.com/Just4Ease/axon/v2/messages"
-	"github.com/Just4Ease/axon/v2/options"
+	"github.com/borderlesshq/axon"
+	"github.com/borderlesshq/axon/messages"
+	"github.com/borderlesshq/axon/options"
 	"github.com/gookit/color"
 	"github.com/nats-io/nats.go"
 	"log"
@@ -17,7 +17,7 @@ type subscription struct {
 	cb          axon.SubscriptionHandler
 	axonOpts    *options.Options
 	subOptions  *options.SubscriptionOptions
-	store       *natsStore
+	store       *eventStore
 	closeSignal chan bool
 	serviceName string
 }
@@ -167,7 +167,7 @@ start:
 	}
 }
 
-func (s *natsStore) addSubscriptionToSubscriptionPool(sub *subscription) error {
+func (s *eventStore) addSubscriptionToSubscriptionPool(sub *subscription) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -181,7 +181,7 @@ func (s *natsStore) addSubscriptionToSubscriptionPool(sub *subscription) error {
 	return nil
 }
 
-func (s *natsStore) Subscribe(topic string, handler axon.SubscriptionHandler, opts ...options.SubscriptionOption) error {
+func (s *eventStore) Subscribe(topic string, handler axon.SubscriptionHandler, opts ...options.SubscriptionOption) error {
 	subOptions, err := options.DefaultSubOptions(opts...)
 	if err != nil {
 		return err

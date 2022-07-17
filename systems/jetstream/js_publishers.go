@@ -3,12 +3,12 @@ package jetstream
 import (
 	"errors"
 	"fmt"
-	"github.com/Just4Ease/axon/v2/messages"
-	"github.com/Just4Ease/axon/v2/options"
+	"github.com/borderlesshq/axon/messages"
+	"github.com/borderlesshq/axon/options"
 	"strings"
 )
 
-func (s *natsStore) Publish(topic string, data []byte, opts ...options.PublisherOption) error {
+func (s *eventStore) Publish(topic string, data []byte, opts ...options.PublisherOption) error {
 	if strings.TrimSpace(topic) == empty {
 		return errors.New("invalid topic name")
 	}
@@ -44,7 +44,7 @@ func (s *natsStore) Publish(topic string, data []byte, opts ...options.Publisher
 	return err
 }
 
-func (s *natsStore) mountAndRegisterPublishTopics(topic string) {
+func (s *eventStore) mountAndRegisterPublishTopics(topic string) {
 	s.mu.Lock()
 	if _, ok := s.publishTopics[topic]; ok {
 		s.mu.Unlock()

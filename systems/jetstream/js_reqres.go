@@ -3,15 +3,15 @@ package jetstream
 import (
 	"errors"
 	"fmt"
-	"github.com/Just4Ease/axon/v2"
-	"github.com/Just4Ease/axon/v2/codec"
-	"github.com/Just4Ease/axon/v2/messages"
-	"github.com/Just4Ease/axon/v2/options"
+	"github.com/borderlesshq/axon"
+	"github.com/borderlesshq/axon/codec"
+	"github.com/borderlesshq/axon/messages"
+	"github.com/borderlesshq/axon/options"
 	"github.com/nats-io/nats.go"
 	"log"
 )
 
-func (s *natsStore) Request(topic string, params []byte, opts ...options.PublisherOption) (*messages.Message, error) {
+func (s *eventStore) Request(topic string, params []byte, opts ...options.PublisherOption) (*messages.Message, error) {
 	option, err := options.DefaultPublisherOptions(opts...)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (s *natsStore) Request(topic string, params []byte, opts ...options.Publish
 	return &mg, nil
 }
 
-func (s *natsStore) Reply(topic string, handler axon.ReplyHandler, opts ...options.SubscriptionOption) error {
+func (s *eventStore) Reply(topic string, handler axon.ReplyHandler, opts ...options.SubscriptionOption) error {
 	responderOptions, err := options.DefaultSubOptions(opts...)
 	if err != nil {
 		return err
@@ -145,7 +145,7 @@ func (r responder) close() {
 	r.closeSignal <- true
 }
 
-func (s *natsStore) registerResponder(responder *responder) error {
+func (s *eventStore) registerResponder(responder *responder) error {
 	s.mu.Lock()
 
 	err := errors.New("this responder topic has already been used")
