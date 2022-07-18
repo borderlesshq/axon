@@ -3,7 +3,7 @@ package options
 import (
 	"context"
 	"errors"
-	"github.com/borderlesshq/axon/codec"
+	"github.com/borderlesshq/axon/v2/codec"
 	"github.com/gosimple/slug"
 	"github.com/nats-io/nats.go"
 	"strings"

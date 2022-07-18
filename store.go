@@ -2,8 +2,8 @@ package axon
 
 import (
 	"context"
-	"github.com/borderlesshq/axon/messages"
-	"github.com/borderlesshq/axon/options"
+	"github.com/borderlesshq/axon/v2/messages"
+	"github.com/borderlesshq/axon/v2/options"
 	"github.com/pkg/errors"
 	"log"
 	"time"

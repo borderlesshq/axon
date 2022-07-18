@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/borderlesshq/axon/options"
-	"github.com/borderlesshq/axon/systems/jetstream"
+	"github.com/borderlesshq/axon/v2/options"
+	"github.com/borderlesshq/axon/v2/systems/jetstream"
 	"github.com/vmihailenco/msgpack/v5"
 	"log"
 	"sync"

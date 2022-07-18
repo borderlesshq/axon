@@ -3,10 +3,10 @@ package jetstream
 import (
 	"errors"
 	"fmt"
-	"github.com/borderlesshq/axon"
-	"github.com/borderlesshq/axon/codec"
-	"github.com/borderlesshq/axon/messages"
-	"github.com/borderlesshq/axon/options"
+	"github.com/borderlesshq/axon/v2"
+	"github.com/borderlesshq/axon/v2/codec"
+	"github.com/borderlesshq/axon/v2/messages"
+	"github.com/borderlesshq/axon/v2/options"
 	"github.com/nats-io/nats.go"
 	"log"
 )

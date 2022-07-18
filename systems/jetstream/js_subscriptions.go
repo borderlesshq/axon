@@ -2,9 +2,9 @@ package jetstream
 
 import (
 	"fmt"
-	"github.com/borderlesshq/axon"
-	"github.com/borderlesshq/axon/messages"
-	"github.com/borderlesshq/axon/options"
+	"github.com/borderlesshq/axon/v2"
+	"github.com/borderlesshq/axon/v2/messages"
+	"github.com/borderlesshq/axon/v2/options"
 	"github.com/gookit/color"
 	"github.com/nats-io/nats.go"
 	"log"

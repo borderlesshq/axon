@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/borderlesshq/axon/options"
-	"github.com/borderlesshq/axon/systems/jetstream"
+	"github.com/borderlesshq/axon/v2/options"
+	"github.com/borderlesshq/axon/v2/systems/jetstream"
 	"log"
 	"time"
 )

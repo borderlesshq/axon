@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/borderlesshq/axon/codec/msgpack"
-	"github.com/borderlesshq/axon/messages"
-	"github.com/borderlesshq/axon/options"
-	"github.com/borderlesshq/axon/systems/jetstream"
+	"github.com/borderlesshq/axon/v2/codec/msgpack"
+	"github.com/borderlesshq/axon/v2/messages"
+	"github.com/borderlesshq/axon/v2/options"
+	"github.com/borderlesshq/axon/v2/systems/jetstream"
 	"time"
 )
 

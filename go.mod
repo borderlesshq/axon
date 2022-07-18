@@ -1,4 +1,4 @@
-module github.com/borderlesshq/axon
+module github.com/borderlesshq/axon/v2
 
 go 1.17
 

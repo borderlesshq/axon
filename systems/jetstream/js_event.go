@@ -1,8 +1,8 @@
 package jetstream
 
 import (
-	"github.com/borderlesshq/axon"
-	"github.com/borderlesshq/axon/messages"
+	"github.com/borderlesshq/axon/v2"
+	"github.com/borderlesshq/axon/v2/messages"
 	"github.com/nats-io/nats.go"
 	"log"
 )

@@ -3,7 +3,7 @@ package text
 
 import (
 	"fmt"
-	"github.com/borderlesshq/axon/codec"
+	"github.com/borderlesshq/axon/v2/codec"
 	"io"
 	"io/ioutil"
 )
