@@ -37,6 +37,7 @@ type EventStore interface {
 	GetServiceName() string
 	Run(ctx context.Context, handlers ...EventHandler)
 	NewKVStore(opts ...options.KVOption) (KVStore, error)
+	NewStreamer() Streamer
 	Close()
 }
 
@@ -48,3 +49,27 @@ type KVStore interface {
 	Watch(ctx context.Context, key string) (stream <-chan []byte, err error)
 	Keys() []string
 }
+
+type Streamer interface {
+	Run()
+	NewStream(handler StreamHandler) Stream
+	OpenStream(id string) (Stream, error)
+	JoinStream(id string)
+	Close()
+}
+
+type Stream interface {
+	ID() string
+	Send(b []byte) error
+	Close()
+}
+
+type StreamReceiver interface {
+	Recv(ctx context.Context) (<-chan []byte, error)
+	Close()
+}
+
+type StreamHandler func(Send, Close)
+
+type Send func(b []byte) error
+type Close func()
