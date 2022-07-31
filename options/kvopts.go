@@ -22,7 +22,7 @@ func SetBucketName(name string) KVOption {
 
 func SetDescription(name string) KVOption {
 	return func(o *KVOptions) error {
-		o.bucketName = name
+		o.description = name
 		return nil
 	}
 }

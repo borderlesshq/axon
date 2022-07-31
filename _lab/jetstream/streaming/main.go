@@ -15,7 +15,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	streamer := ev.NewStreamer()
+	streamer, _ := ev.NewStreamer()
 	stream := streamer.NewStream(func(send axon.Send, c axon.Close) {
 
 		for {

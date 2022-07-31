@@ -1,7 +1,6 @@
 package jetstream
 
 import (
-	"context"
 	"fmt"
 	"github.com/borderlesshq/axon/v2"
 	"github.com/nats-io/nats.go"
@@ -15,7 +14,6 @@ type stream struct {
 	executed         bool
 	streamChannel    string
 	heartBeatChannel string
-	receiver         chan []byte
 	closer           chan bool
 	pipe             *nats.Conn
 	timeCreated      time.Time
@@ -36,7 +34,7 @@ func (s *stream) Send(b []byte) error {
 	return s.pipe.Publish(s.streamChannel, b)
 }
 
-func (s *stream) Recv(ctx context.Context) (<-chan []byte, error) {
+func (s *stream) Recv() (<-chan []byte, error) {
 	out := make(chan []byte)
 	errChan := make(chan error)
 

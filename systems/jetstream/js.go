@@ -173,7 +173,7 @@ func (s *eventStore) registerSubjectsOnStream() {
 			if len(streamInfo.Config.Subjects) != len(subjects) {
 				_ = s.jsc.DeleteStream(s.opts.ServiceName)
 				time.Sleep(1 * time.Second)
-				streamInfo, _ = s.jsc.AddStream(&nats.StreamConfig{
+				_, _ = s.jsc.AddStream(&nats.StreamConfig{
 					Name:     s.opts.ServiceName,
 					Subjects: subjects,
 					MaxAge:   time.Hour * 48,

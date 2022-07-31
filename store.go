@@ -37,7 +37,7 @@ type EventStore interface {
 	GetServiceName() string
 	Run(ctx context.Context, handlers ...EventHandler)
 	NewKVStore(opts ...options.KVOption) (KVStore, error)
-	NewStreamer() Streamer
+	NewStreamer(opts ...options.StreamerOption) (Streamer, error)
 	Close()
 }
 
@@ -60,7 +60,7 @@ type Streamer interface {
 type Stream interface {
 	ID() string
 	Send(b []byte) error
-	Recv(ctx context.Context) (<-chan []byte, error)
+	Recv() (<-chan []byte, error)
 	Close()
 	String() string
 }

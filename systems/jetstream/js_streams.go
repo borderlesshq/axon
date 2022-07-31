@@ -2,6 +2,7 @@ package jetstream
 
 import (
 	"github.com/borderlesshq/axon/v2"
+	"github.com/borderlesshq/axon/v2/options"
 	"github.com/borderlesshq/axon/v2/utils"
 	"github.com/nats-io/nats.go"
 	"sync"
@@ -25,12 +26,12 @@ type cmd struct {
 }
 
 type ncStreams struct {
-	su                     sync.RWMutex
-	subscribers            map[string]*stream
-	streamProcessorChan    chan cmd
-	staleStreamCleanupTime time.Duration
-	pipe                   *nats.Conn
-	sn                     string
+	su                         sync.RWMutex
+	subscribers                map[string]*stream
+	streamProcessorChan        chan cmd
+	staleStreamCleanupDuration time.Duration
+	pipe                       *nats.Conn
+	sn                         string
 }
 
 func (s *ncStreams) JoinStream(id string) (axon.Stream, error) {
@@ -136,7 +137,7 @@ streamCleaner cleans stale streams.
 func (s *ncStreams) streamCleaner() {
 roster:
 	for _, str := range s.subscribers {
-		duration := time.Now().Add(s.staleStreamCleanupTime)
+		duration := time.Now().Add(s.staleStreamCleanupDuration)
 		if str.timeCreated.After(duration) && !str.executed {
 			s.streamProcessorChan <- cmd{
 				flow: closeFlow,
@@ -149,13 +150,20 @@ roster:
 	goto roster
 }
 
-func (s *eventStore) NewStreamer() axon.Streamer {
-	return &ncStreams{
-		subscribers:            make(map[string]*stream),
-		sn:                     s.serviceName,
-		streamProcessorChan:    make(chan cmd, 3),
-		staleStreamCleanupTime: time.Minute * 5,
-		pipe:                   s.nc,
-		su:                     sync.RWMutex{},
+func (s *eventStore) NewStreamer(opts ...options.StreamerOption) (axon.Streamer, error) {
+	opt := options.DefaultStreamerOptions()
+	for _, option := range opts {
+		if err := option(&opt); err != nil {
+			return nil, err
+		}
 	}
+
+	return &ncStreams{
+		subscribers:                make(map[string]*stream),
+		sn:                         s.serviceName,
+		streamProcessorChan:        make(chan cmd, opt.ChanSize()),
+		staleStreamCleanupDuration: opt.Duration(),
+		pipe:                       s.nc,
+		su:                         sync.RWMutex{},
+	}, nil
 }

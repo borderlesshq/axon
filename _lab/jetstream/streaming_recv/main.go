@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/borderlesshq/axon/v2/options"
 	"github.com/borderlesshq/axon/v2/systems/jetstream"
@@ -14,7 +13,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	streamer := ev.NewStreamer()
+	streamer, _ := ev.NewStreamer()
 	go streamer.Run()
 
 	stream, err := streamer.JoinStream("01g9anwfnsx23tmktpaxtkjzjb-stream_01g9anwfnsx23tmktpaxtkjzjb-stream-heartbeat")
@@ -22,7 +21,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	out, err := stream.Recv(context.Background())
+	out, err := stream.Recv()
 
 	if err != nil {
 		log.Fatal(err)
