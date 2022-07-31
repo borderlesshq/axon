@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/borderlesshq/axon/v2/codec"
-	"github.com/gosimple/slug"
 	"github.com/nats-io/nats.go"
 	"strings"
 )
@@ -30,10 +29,11 @@ type Option func(o *Options) error
 
 func SetStoreName(name string) Option {
 	return func(o *Options) error {
-		if strings.TrimSpace(name) == "" {
+		sn := strings.TrimSpace(name)
+		if sn == "" {
 			return errors.New("invalid store name")
 		}
-		o.ServiceName = slug.Make(name)
+		o.ServiceName = sn
 		return nil
 	}
 }

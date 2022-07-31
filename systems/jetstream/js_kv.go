@@ -3,7 +3,6 @@ package jetstream
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/borderlesshq/axon/v2"
 	"github.com/borderlesshq/axon/v2/options"
 	"github.com/nats-io/nats.go"
@@ -90,7 +89,7 @@ func (s *eventStore) NewKVStore(opts ...options.KVOption) (axon.KVStore, error) 
 		return nil, errors.New("invalid kv bucket name")
 	}
 
-	bucket := fmt.Sprintf("%s-%s", s.opts.ServiceName, opt.BucketName())
+	bucket := s.opts.ServiceName + "-" + opt.BucketName()
 	kv, err := s.jsc.KeyValue(bucket)
 checkErr:
 	if err != nil {

@@ -2,7 +2,6 @@ package jetstream
 
 import (
 	"errors"
-	"fmt"
 	"github.com/borderlesshq/axon/v2/messages"
 	"github.com/borderlesshq/axon/v2/options"
 	"strings"
@@ -32,7 +31,7 @@ func (s *eventStore) Publish(topic string, data []byte, opts ...options.Publishe
 		return err
 	}
 
-	subject := fmt.Sprintf("%s-%s", topic, option.SpecVersion())
+	subject := topic + "-" + option.SpecVersion()
 
 	// Publish using NATS connection if JetStream is not enabled on nats-server.
 	if option.IsStreamingDisabled() || !s.jsmEnabled {

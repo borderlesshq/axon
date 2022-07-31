@@ -2,7 +2,6 @@ package jetstream
 
 import (
 	"errors"
-	"fmt"
 	"github.com/borderlesshq/axon/v2"
 	"github.com/borderlesshq/axon/v2/codec"
 	"github.com/borderlesshq/axon/v2/messages"
@@ -31,7 +30,7 @@ func (s *eventStore) Request(topic string, params []byte, opts ...options.Publis
 		return nil, err
 	}
 
-	subject := fmt.Sprintf("%s-%s", message.Subject, message.SpecVersion)
+	subject := message.Subject + "-" + message.SpecVersion
 	msg, err := s.nc.RequestWithContext(option.Context(), subject, data)
 	if err != nil {
 		return nil, err
@@ -84,7 +83,7 @@ type responder struct {
 func (r responder) mountResponder() error {
 	errChan := make(chan error)
 
-	topic := fmt.Sprintf("%s-%s", r.topic, r.responderOpts.ExpectedSpecVersion())
+	topic := r.topic + "-" + r.responderOpts.ExpectedSpecVersion()
 	go func(errChan chan error) {
 		sub, err := r.nc.QueueSubscribe(topic, r.opts.ServiceName, func(msg *nats.Msg) {
 			var mg messages.Message
@@ -150,7 +149,7 @@ func (s *eventStore) registerResponder(responder *responder) error {
 
 	err := errors.New("this responder topic has already been used")
 
-	topic := fmt.Sprintf("%s-%s", responder.topic, responder.responderOpts.ExpectedSpecVersion())
+	topic := responder.topic + "-" + responder.responderOpts.ExpectedSpecVersion()
 	if _, ok := s.publishTopics[topic]; ok {
 		s.mu.Unlock()
 		return err

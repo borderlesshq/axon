@@ -1,7 +1,6 @@
 package jetstream
 
 import (
-	"fmt"
 	"github.com/borderlesshq/axon/v2"
 	"github.com/borderlesshq/axon/v2/messages"
 	"github.com/borderlesshq/axon/v2/options"
@@ -36,9 +35,10 @@ func (s *subscription) mountSubscription() error {
 		go s.cb(event)
 	}
 
-	topic := fmt.Sprintf("%s-%s", s.topic, s.subOptions.ExpectedSpecVersion())
+	topic := s.topic + "-" + s.subOptions.ExpectedSpecVersion()
 
-	durableStore := strings.ReplaceAll(fmt.Sprintf("%s-%s", s.serviceName, topic), ".", "-")
+	rawStore := s.serviceName + "-" + topic
+	durableStore := strings.ReplaceAll(rawStore, ".", "-")
 
 	// Without JetStream, use just nats.
 	if s.subOptions.IsStreamingDisabled() || !s.store.jsmEnabled {
@@ -80,14 +80,14 @@ func (s *subscription) mountSubscription() error {
 			break
 		case options.Exclusive:
 			consumer, err := s.store.jsc.AddConsumer(s.serviceName, &nats.ConsumerConfig{
-				Durable: durableStore,
-				//DeliverSubject: nats.NewInbox(),
-				DeliverPolicy: nats.DeliverLastPolicy,
-				AckPolicy:     nats.AckExplicitPolicy,
-				MaxDeliver:    s.subOptions.MaxRedelivery(),
-				ReplayPolicy:  nats.ReplayOriginalPolicy,
-				MaxAckPending: 20000,
-				FlowControl:   false,
+				Durable:        durableStore,
+				DeliverSubject: nats.NewInbox(),
+				DeliverPolicy:  nats.DeliverLastPolicy,
+				AckPolicy:      nats.AckExplicitPolicy,
+				MaxDeliver:     s.subOptions.MaxRedelivery(),
+				ReplayPolicy:   nats.ReplayOriginalPolicy,
+				MaxAckPending:  20000,
+				FlowControl:    false,
 				//AckWait:         0,
 				//RateLimit:       0,
 				//Heartbeat:       0,
@@ -171,7 +171,7 @@ func (s *eventStore) addSubscriptionToSubscriptionPool(sub *subscription) error 
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	topic := fmt.Sprintf("%s-%s", sub.topic, sub.subOptions.ExpectedSpecVersion())
+	topic := sub.topic + "-" + sub.subOptions.ExpectedSpecVersion()
 
 	if _, ok := s.subscriptions[topic]; ok {
 		log.Fatalf("there is already an existing subscription registered to this topic: %s", sub.topic)

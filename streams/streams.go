@@ -14,7 +14,7 @@ func (s *Streams) RunStream(channel string) (heatBeatChannel string, err error) 
 	}
 
 	s.streamProcessorChan <- cmd{
-		flow: runFlow,
+		flow: serveFlow,
 		str:  str,
 	}
 

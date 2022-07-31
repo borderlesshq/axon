@@ -53,15 +53,16 @@ type KVStore interface {
 type Streamer interface {
 	Run()
 	NewStream(handler StreamHandler) Stream
-	OpenStream(id string) (Stream, error)
-	JoinStream(id string)
+	JoinStream(id string) (Stream, error)
 	Close()
 }
 
 type Stream interface {
 	ID() string
 	Send(b []byte) error
+	Recv(ctx context.Context) (<-chan []byte, error)
 	Close()
+	String() string
 }
 
 type StreamReceiver interface {
